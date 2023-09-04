@@ -2,6 +2,8 @@
 
 ## Overview
 
+Please read [the top-level readme file](../) for the descriptive overview of this project.
+
 ## Bill of Materials (BOM)
 
 - [Adafruit Feather Huzzah, ESP8266](https://www.adafruit.com/product/2821)

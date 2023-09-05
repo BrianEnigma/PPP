@@ -13,6 +13,11 @@
 // For more details, see page 4 of the datasheet: https://cdn-shop.adafruit.com/product-files/1031/GP2Y0A02YK-DATA-SHEET.PDF
 #define ANALOG_THRESHOLD 900
 
+// How long to wait after powering-up before we start to check the proximity sensor.
+// This gives a "minimum time to reach safe distance" so that you don't immediately
+// trigger the animation at boot.
+#define POST_BOOT_HOLDOFF_TIMER 10
+
 // Minimum time (in minutes) to randomly hold off between actions.
 #define HOLDOFF_MIN_TIME_MINUTES 25
 // Maximum time (in minutes) to randomly hold off between actions.
@@ -248,7 +253,7 @@ void setup()
     randomSeed(analogRead(A0));
 
     // Give some time to "reach minimum safe distance" before prox sensing kicks in.
-    holdoffTimer("StartupDelay", 10);
+    holdoffTimer("StartupDelay", POST_BOOT_HOLDOFF_TIMER);
 }
 
 void waitForProx()

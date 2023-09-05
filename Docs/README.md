@@ -85,7 +85,24 @@ New code is uploaded through the micro USB port on the Feather board (it's the b
 
 ### The Code
 
-(TBD)
+The code performs the following operations:
+
+- At power-up, accidentally, one of the low piano key solenoids is briefly activated. This is a hardware accident (see bugs).
+- A holdoff timer of 10 seconds (`POST_BOOT_HOLDOFF_TIMER`) starts counting down. This lets you be near the piano without immediately triggering the animation. Like in _Alien,_ this is a “minimum time to reach safe distance.” This can be bypassed with the “A” button on the display board.
+- It waits for the proximity sensor to trigger. The trigger point is `ANALOG_THRESHOLD`, but the sensor I used is a little far-sighted. It's basically either “you're really far away” or “holy crap, you're within 3 feet.” So this threshold is a little bit meaningless.
+- Once it detects someone is nearby, it:
+    - There's a 1-in-10 (`HIGH_HIT_RANDOM`) chance of triggering the short single-flash, single-high-key-slam animation.
+    - Otherwise it triggers the three low key animation.
+- It enters a holdoff timer that lasts a random number of minutes between 25 (`HOLDOFF_MIN_TIME_MINUTES`) and 45 (`HOLDOFF_MAX_TIME_MINUTES`).
+
+To help with debugging:
+
+- Any holdoff timer (the power-up one or the between-animations one) can be skipped by hitting the “A” button.
+- The between-animations holdoff can also be skipped and immediately go to a specific animation by hitting “C” (low-note animation) or “B” (high-note animation). This allows for testing the hardware installation.
+
+The monospaced name above are constants that can be tweaked in the source and then re-uploaded into the microcontroller.
+
+![constants](constants.png)
 
 ## Bugs
 

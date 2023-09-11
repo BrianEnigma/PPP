@@ -16,15 +16,16 @@
 // How long to wait after powering-up before we start to check the proximity sensor.
 // This gives a "minimum time to reach safe distance" so that you don't immediately
 // trigger the animation at boot.
-#define POST_BOOT_HOLDOFF_TIMER 10
+// This is in seconds.
+#define POST_BOOT_HOLDOFF_TIMER 3
 
 // Minimum time (in minutes) to randomly hold off between actions.
-#define HOLDOFF_MIN_TIME_MINUTES 25
+#define HOLDOFF_MIN_TIME_MINUTES 10
 // Maximum time (in minutes) to randomly hold off between actions.
-#define HOLDOFF_MAX_TIME_MINUTES 45
+#define HOLDOFF_MAX_TIME_MINUTES 15
 
 // One-in-this-many (1:10) chance of hitting the high note instead of the sequence of low notes.
-#define HIGH_HIT_RANDOM 10
+#define HIGH_HIT_RANDOM 8
 
 // --------------------------------------------------------------------------------
 // Beyond this, thar be dragons. Try not to mess with any of this unless you really
@@ -302,7 +303,8 @@ void waitForProx()
 void bangLow()
 {
     const unsigned char low = 128;
-    const unsigned int delayStart = 10;
+    const unsigned int delayStart = 3;
+    const unsigned int delayEnd = 10;
     const unsigned char lightningHigh = 192;
     const unsigned int delayLightning = 2;
 #ifdef INCLIDE_SERIAL
@@ -315,6 +317,7 @@ void bangLow()
     // Pulse
     for (int repeat = 0; repeat < 3; repeat++)
     {
+#if 1        
         // Activate each key in sequence.
         switch (repeat)
         {
@@ -322,10 +325,32 @@ void bangLow()
             case 1: digitalWrite(SOLENOID_PIN_2, HIGH); break;
             case 2: digitalWrite(SOLENOID_PIN_3, HIGH); break;
         }
+#else        
+        // First key stays down. Hit second, then third. Only two keys every held down at once.
+        switch (repeat)
+        {
+            case 0: 
+                digitalWrite(SOLENOID_PIN_1, HIGH); 
+                break;
+            case 1: 
+                digitalWrite(SOLENOID_PIN_2, HIGH); 
+                break;
+            case 2: 
+                digitalWrite(SOLENOID_PIN_2, LOW); 
+                digitalWrite(SOLENOID_PIN_3, HIGH); 
+                break;
+        }
+#endif
         // Lightning strike
         for (int i = lightningHigh; i > 0; i--)
             lightAll(i > low ? i : low, i, i, delayLightning);
+#if 1            
         delay(1000);
+#else
+        delay(500);
+        digitalWrite(SOLENOID_PIN_2, LOW);
+        delay(500);
+#endif        
     }
     // Let go of all keys.
     digitalWrite(SOLENOID_PIN_1, LOW);
@@ -333,7 +358,7 @@ void bangLow()
     digitalWrite(SOLENOID_PIN_3, LOW);
     // Fade to black
     for (int i = low; i >= 0; i--)
-        lightAll(i, 0, 0, delayStart);
+        lightAll(i, 0, 0, delayEnd);
     // Ensure we're off.
     off();
 #ifdef INCLIDE_SERIAL

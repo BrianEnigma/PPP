@@ -317,7 +317,7 @@ void bangLow()
     // Pulse
     for (int repeat = 0; repeat < 3; repeat++)
     {
-#if 1        
+#if 0
         // Activate each key in sequence.
         switch (repeat)
         {
@@ -344,12 +344,14 @@ void bangLow()
         // Lightning strike
         for (int i = lightningHigh; i > 0; i--)
             lightAll(i > low ? i : low, i, i, delayLightning);
-#if 1            
+#if 0
         delay(1000);
 #else
         delay(500);
         digitalWrite(SOLENOID_PIN_2, LOW);
         delay(500);
+        if (repeat == 2)
+            delay(1000);
 #endif        
     }
     // Let go of all keys.
